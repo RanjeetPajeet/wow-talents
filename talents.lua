@@ -1,21 +1,58 @@
-
+----------
+-- 
+-- 
+-- 
+----------
 
 
 local C = C_SpecializationInfo
 
 
+function TALENT(tabIndex, talentIndex)
+    ---
+    -- Creates an object representing a talent.
+    -- 
+    -- Parameters
+    -- 
+    --     tabIndex: 
+    --     talentIndex: 
+    -- 
+    -- Returns
+    -- 
+    --     A table with the following:
+    ---
+    local talent = {};
+    local name, iconTexture, tier, column, rank, maxRank, isExceptional, available, previewRank, previewAvailable = GetTalentInfo(tabIndex,talentIndex);
+    local requiresLevel = 10 + ((tier-1) * 5)
+    
+    talent["name"] = name;
+    talent["tier"] = tier;
+    talent["rank"] = rank;
+    talent["maxRank"] = maxRank;
+    talent["column"] = column;
+    talent["tab"] = tabIndex;
+    talent["index"] = talentIndex;
+    talent["tree"] = GetTalentTabInfo(tabIndex);
+    talent["requiresLevel"] = requiresLevel;
 
+    function talent:Print(self)
+        print(self["name"])
+        print("  > Tree: ", self["tree"])
+        print("  > Rank: ", self["rank"], "/", self["maxRank"])
+        print("  > Tier: ", self["tier"], "(requires lvl", self["requiresLevel"] .. ")")
+    end
 
-
--- local function GetTalentInfo()
-
---     local specID = C:GetActiveSpecGroupInfo()
-
---     local talentInfo = GetTalentInfoBySpecialization(specID)
-
---     return talentInfo
-
--- end
+    function talent:Learn(self, numPoints)
+        if (numPoints == nil) then
+            numPoints = self["rank"]
+        end
+        for i=1, numPoints do
+            C_Timer.After(0.05, function()
+                LearnTalent(self["tab"],self["index"])
+            end)
+        end
+    end
+end
 
 
 
